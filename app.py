@@ -136,7 +136,7 @@ def main_app():
                     'runs_left': [runs_left],
                     'balls_left': [balls_left],
                     'wickets_left': [wickets_left],
-                    'total_runs_x': [target],
+                    'total_run_x': [target],
                     'crr': [crr],
                     'rrr': [rrr]
                 })

@@ -17,41 +17,41 @@ def add_bg_from_local(image_file):
         background-attachment: fixed;
     }}
 
-    /* Make title and caption white with shadow */
     .stApp > .main h1, .stApp > .main .stCaption {{
         color: white !important;
-        text-shadow: 1px 1px 3px #000000;
+        text-shadow: 2px 2px 4px #000000;
     }}
 
-    /* Sidebar: light background, black text */
     .stSidebar > div:first-child {{
-        background-color: rgba(255, 255, 255, 0.8);
+        background-color: rgba(255, 255, 255, 0.95);
     }}
+    
     .stSidebar * {{
-        color: black !important;
+        color: #0E1117 !important;
         text-shadow: none !important;
     }}
 
-    /* Header: transparent */
     .stApp > div[data-testid="stToolbar"], .stApp > header {{
         background-color: rgba(255, 255, 255, 0); 
     }}
 
-    /* Main content box: light background, black text */
     .main > div[data-testid="stBlock"] {{
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(255, 255, 255, 0.9);
         padding: 20px;
         border-radius: 10px;
     }}
     .main > div[data-testid="stBlock"] * {{
-        color: black !important; 
+        color: #0E1117 !important; 
         text-shadow: none !important;
     }}
-
-    /* Login page title (which is not in the block) */
+    
     .main > div > h1 {{
         color: white !important;
-        text-shadow: 1px 1px 3px #000000 !important;
+        text-shadow: 2px 2px 4px #000000 !important;
+    }}
+    
+    .stButton > button {{
+        color: #0E1117 !important;
     }}
 
     </style>
@@ -156,7 +156,7 @@ def main_app():
                 st.progress(1.0)
                 
             else:
-                input_d = pd.DataFrame({
+                input_df = pd.DataFrame({
                     'BattingTeam': [batting_team],
                     'BowlingTeam': [bowling_team],
                     'City': [selected_city],
@@ -168,7 +168,7 @@ def main_app():
                     'rrr': [rrr]
                 })
                 
-                result = pipe.predict_proba(input_d)
+                result = pipe.predict_proba(input_df)
                 loss_prob = result[0][0]
                 win_prob = result[0][1]
 

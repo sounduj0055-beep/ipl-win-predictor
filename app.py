@@ -1,6 +1,36 @@
 import streamlit as st
 import pickle
 import pandas as pd
+import base64
+
+st.set_page_config(page_title="IPL Predictor", layout="wide")
+
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode()
+    st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: url(data:image/jpeg;base64,{encoded_string});
+        background-size: cover;
+        background-attachment: fixed;
+    }}
+    .stSidebar > div:first-child {{
+        background-color: rgba(255, 255, 255, 0.8);
+    }}
+    .stApp > div[data-testid="stToolbar"], .stApp > header {{
+        background-color: rgba(255, 255, 255, 0);
+    }}
+    .main > div {{
+        background-color: rgba(255, 255, 255, 0.85);
+        padding: 20px;
+        border-radius: 10px;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
 
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -18,7 +48,15 @@ def login_page():
             st.error("Incorrect password")
 
 def main_app():
-    pipe = pickle.load(open('pipe.pkl', 'rb'))
+    try:
+        pipe = pickle.load(open('pipe.pkl', 'rb'))
+    except FileNotFoundError:
+        st.error("Model file (pipe.pkl) not found. Please ensure it's in the same directory.")
+        return
+    except Exception as e:
+        st.error(f"An error occurred while loading the model: {e}")
+        return
+        
     teams = [
         'Sunrisers Hyderabad', 'Mumbai Indians', 'Royal Challengers Bangalore',
         'Kolkata Knight Riders', 'Kings XI Punjab', 'Chennai Super Kings',
@@ -61,6 +99,14 @@ def main_app():
             crr = score / overs if overs > 0 else 0
             rrr = (runs_left * 6) / balls_left if balls_left > 0 else float('inf')
 
+            st.subheader("Match Summary")
+            summary_data = {
+                "Batting Team": batting_team,
+                "Bowling Team": bowling_team,
+                "Match State": f"Need {runs_left} runs in {int(balls_left)} balls"
+            }
+            st.json(summary_data)
+
             if runs_left <= 0:
                 st.header(f"Predicted Winner: {batting_team}")
                 st.subheader(f"{batting_team} Win Probability")
@@ -69,6 +115,13 @@ def main_app():
                 st.progress(0.0)
             
             elif wickets_left <= 0:
+                st.header(f"Predicted Winner: {bowling_team}")
+                st.subheader(f"{batting_team} Win Probability")
+                st.progress(0.0)
+                st.subheader(f"{bowling_team} Win Probability")
+                st.progress(1.0)
+            
+            elif balls_left <= 0:
                 st.header(f"Predicted Winner: {bowling_team}")
                 st.subheader(f"{batting_team} Win Probability")
                 st.progress(0.0)
@@ -83,7 +136,7 @@ def main_app():
                     'runs_left': [runs_left],
                     'balls_left': [balls_left],
                     'wickets_left': [wickets_left],
-                    'total_run_x': [target],
+                    'total_runs_x': [target],
                     'crr': [crr],
                     'rrr': [rrr]
                 })
@@ -104,6 +157,11 @@ def main_app():
                 st.progress(loss_prob)
 
 if st.session_state.logged_in:
+    try:
+        add_bg_from_local('background.jpg')
+    except FileNotFoundError:
+        st.warning("Background image 'background.jpg' not found. App will use default background.")
+    
     main_app()
 else:
     login_page()

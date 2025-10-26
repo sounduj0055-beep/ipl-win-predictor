@@ -17,37 +17,41 @@ def add_bg_from_local(image_file):
         background-attachment: fixed;
     }}
 
-    .stApp, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6, .stApp label, .stApp p, .stApp div[data-baseweb="select"] > div {{
+    /* Make title and caption white with shadow */
+    .stApp > .main h1, .stApp > .main .stCaption {{
         color: white !important;
         text-shadow: 1px 1px 3px #000000;
     }}
 
+    /* Sidebar: light background, black text */
     .stSidebar > div:first-child {{
         background-color: rgba(255, 255, 255, 0.8);
     }}
-    
     .stSidebar * {{
         color: black !important;
         text-shadow: none !important;
     }}
 
+    /* Header: transparent */
     .stApp > div[data-testid="stToolbar"], .stApp > header {{
         background-color: rgba(255, 255, 255, 0); 
     }}
 
-    .main > div {{
+    /* Main content box: light background, black text */
+    .main > div[data-testid="stBlock"] {{
         background-color: rgba(255, 255, 255, 0.85);
         padding: 20px;
         border-radius: 10px;
     }}
-
-    .main > div * {{
+    .main > div[data-testid="stBlock"] * {{
         color: black !important; 
         text-shadow: none !important;
     }}
-    
-    .stButton > button {{
-        color: black !important;
+
+    /* Login page title (which is not in the block) */
+    .main > div > h1 {{
+        color: white !important;
+        text-shadow: 1px 1px 3px #000000 !important;
     }}
 
     </style>
@@ -88,7 +92,7 @@ def main_app():
     cities = [
         'Hyderabad', 'Bangalore', 'Mumbai', 'Indore', 'Kolkata', 'Delhi',
         'Chandigarh', 'Jaipur', 'Chennai', 'Cape Town', 'Port Elizabeth',
-        'D Durban', 'Centurion', 'East London', 'Johannesburg', 'Kimberley',
+        'Durban', 'Centurion', 'East London', 'Johannesburg', 'Kimberley',
         'Bloemfontein', 'Ahmedabad', 'Cuttack', 'Nagpur', 'Dharamsala',
         'Visakhapatnam', 'Pune', 'Raipur', 'Ranchi', 'Abu Dhabi',
         'Sharjah', 'Mohali', 'Bengaluru'
@@ -152,7 +156,7 @@ def main_app():
                 st.progress(1.0)
                 
             else:
-                input_df = pd.DataFrame({
+                input_d = pd.DataFrame({
                     'BattingTeam': [batting_team],
                     'BowlingTeam': [bowling_team],
                     'City': [selected_city],
@@ -164,7 +168,7 @@ def main_app():
                     'rrr': [rrr]
                 })
                 
-                result = pipe.predict_proba(input_df)
+                result = pipe.predict_proba(input_d)
                 loss_prob = result[0][0]
                 win_prob = result[0][1]
 

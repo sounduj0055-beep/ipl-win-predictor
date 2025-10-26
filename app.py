@@ -70,7 +70,7 @@ if st.button('Predict Win Probability'):
                 'runs_left': [runs_left],
                 'balls_left': [balls_left],
                 'wickets_left': [wickets_left],
-                'total_runs_x': [target],
+                'total_run_x': [target],
                 'crr': [crr],
                 'rrr': [rrr]
             })
@@ -89,3 +89,4 @@ if st.button('Predict Win Probability'):
             
             st.subheader(f"{bowling_team} Win Probability")
             st.progress(loss_prob)
+

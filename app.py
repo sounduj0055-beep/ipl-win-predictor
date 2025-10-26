@@ -19,52 +19,73 @@ cities = [
     'Sharjah', 'Mohali', 'Bengaluru'
 ]
 
-st.title('IPL Win Predictor')
+st.title('IPL Win Predictor 🏏')
+st.caption('A Machine Learning app to predict real-time match outcomes')
 
-col1, col2 = st.columns(2)
+st.sidebar.header('Enter Match Details')
 
-with col1:
-    batting_team = st.selectbox('Select the batting team', sorted(teams))
-with col2:
-    bowling_team = st.selectbox('Select the bowling team', sorted(teams))
+batting_team = st.sidebar.selectbox('Select the batting team', sorted(teams))
+bowling_team = st.sidebar.selectbox('Select the bowling team', sorted(teams))
 
-selected_city = st.selectbox('Select host city', sorted(cities))
+selected_city = st.sidebar.selectbox('Select host city', sorted(cities))
 
-target = st.number_input('Target', min_value=1)
+target = st.sidebar.number_input('Target Score', min_value=1)
 
-col3, col4, col5 = st.columns(3)
+score = st.sidebar.number_input('Current Score', min_value=0)
 
-with col3:
-    score = st.number_input('Score', min_value=0)
-with col4:
-    overs = st.number_input('Overs completed', min_value=0.0, max_value=19.5, step=0.1, format="%.1f")
-with col5:
-    wickets = st.number_input('Wickets out', min_value=0, max_value=9)
+overs = st.sidebar.number_input('Overs completed', min_value=0.0, max_value=19.5, step=0.1, format="%.1f")
 
-if st.button('Predict Probability'):
-    runs_left = target - score
-    balls_left = 120 - (overs * 6)
-    wickets_left = 10 - wickets
-    crr = score / overs if overs > 0 else 0
-    rrr = (runs_left * 6) / balls_left if balls_left > 0 else float('inf')
+wickets = st.sidebar.number_input('Wickets out', min_value=0, max_value=9)
 
-    input_df = pd.DataFrame({
-        'BattingTeam': [batting_team],
-        'BowlingTeam': [bowling_team],
-        'City': [selected_city],
-        'runs_left': [runs_left],
-        'balls_left': [balls_left],
-        'wickets_left': [wickets_left],
-        'total_run_x': [target],
-        'crr': [crr],
-        'rrr': [rrr]
-    })
+if st.button('Predict Win Probability'):
     
-    result = pipe.predict_proba(input_df)
-    win_prob = result[0][1]
-    loss_prob = result[0][0]
+    if batting_team == bowling_team:
+        st.error('Batting and Bowling teams cannot be the same. Please select different teams.')
+    else:
+        runs_left = target - score
+        balls_left = 120 - (overs * 6)
+        wickets_left = 10 - wickets
+        crr = score / overs if overs > 0 else 0
+        rrr = (runs_left * 6) / balls_left if balls_left > 0 else float('inf')
 
-    st.header(f"{batting_team} - {round(win_prob * 100)}%")
-    st.header(f"{bowling_team} - {round(loss_prob * 100)}%")
+        if runs_left <= 0:
+            st.header(f"Predicted Winner: {batting_team}")
+            st.subheader(f"{batTing_team} Win Probability")
+            st.progress(1.0)
+            st.subheader(f"{bowling_team} Win Probability")
+            st.progress(0.0)
+        
+        elif wickets_left <= 0:
+            st.header(f"Predicted Winner: {bowling_team}")
+            st.subheader(f"{batting_team} Win Probability")
+            st.progress(0.0)
+            st.subheader(f"{bowling_team} Win Probability")
+            st.progress(1.0)
+            
+        else:
+            input_df = pd.DataFrame({
+                'BattingTeam': [batting_team],
+                'BowlingTeam': [bowling_team],
+                'City': [selected_city],
+                'runs_left': [runs_left],
+                'balls_left': [balls_left],
+                'wickets_left': [wickets_left],
+                'total_runs_x': [target],
+                'crr': [crr],
+                'rrr': [rrr]
+            })
+            
+            result = pipe.predict_proba(input_df)
+            loss_prob = result[0][0]
+            win_prob = result[0][1]
 
+            if win_prob > 0.5:
+                st.header(f"Predicted Winner: {batting_team}")
+            else:
+                st.header(f"Predicted Winner: {bowling_team}")
 
+            st.subheader(f"{batting_team} Win Probability")
+            st.progress(win_prob)
+            
+            st.subheader(f"{bowling_team} Win Probability")
+            st.progress(loss_prob)

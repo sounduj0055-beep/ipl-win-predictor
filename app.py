@@ -16,17 +16,40 @@ def add_bg_from_local(image_file):
         background-size: cover;
         background-attachment: fixed;
     }}
+
+    .stApp, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6, .stApp label, .stApp p, .stApp div[data-baseweb="select"] > div {{
+        color: white !important;
+        text-shadow: 1px 1px 3px #000000;
+    }}
+
     .stSidebar > div:first-child {{
         background-color: rgba(255, 255, 255, 0.8);
     }}
-    .stApp > div[data-testid="stToolbar"], .stApp > header {{
-        background-color: rgba(255, 255, 255, 0);
+    
+    .stSidebar * {{
+        color: black !important;
+        text-shadow: none !important;
     }}
+
+    .stApp > div[data-testid="stToolbar"], .stApp > header {{
+        background-color: rgba(255, 255, 255, 0); 
+    }}
+
     .main > div {{
         background-color: rgba(255, 255, 255, 0.85);
         padding: 20px;
         border-radius: 10px;
     }}
+
+    .main > div * {{
+        color: black !important; 
+        text-shadow: none !important;
+    }}
+    
+    .stButton > button {{
+        color: black !important;
+    }}
+
     </style>
     """,
     unsafe_allow_html=True
@@ -65,7 +88,7 @@ def main_app():
     cities = [
         'Hyderabad', 'Bangalore', 'Mumbai', 'Indore', 'Kolkata', 'Delhi',
         'Chandigarh', 'Jaipur', 'Chennai', 'Cape Town', 'Port Elizabeth',
-        'Durban', 'Centurion', 'East London', 'Johannesburg', 'Kimberley',
+        'D Durban', 'Centurion', 'East London', 'Johannesburg', 'Kimberley',
         'Bloemfontein', 'Ahmedabad', 'Cuttack', 'Nagpur', 'Dharamsala',
         'Visakhapatnam', 'Pune', 'Raipur', 'Ranchi', 'Abu Dhabi',
         'Sharjah', 'Mohali', 'Bengaluru'

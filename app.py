@@ -55,7 +55,7 @@ if st.button('Predict Probability'):
         'runs_left': [runs_left],
         'balls_left': [balls_left],
         'wickets_left': [wickets_left],
-        'total_runs': [target],
+        'total_runs_x': [target],
         'crr': [crr],
         'rrr': [rrr]
     })
@@ -66,3 +66,4 @@ if st.button('Predict Probability'):
 
     st.header(f"{batting_team} - {round(win_prob * 100)}%")
     st.header(f"{bowling_team} - {round(loss_prob * 100)}%")
+

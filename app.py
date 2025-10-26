@@ -17,15 +17,18 @@ def add_bg_from_local(image_file):
         background-attachment: fixed;
     }}
 
-    .stApp > .main h1, .stApp > .main .stCaption {{
+    div[data-testid="stAppViewContainer"] > .main h1 {{
         color: white !important;
-        text-shadow: 2px 2px 4px #000000;
+        text-shadow: 2px 2px 4px #000000 !important;
+    }}
+    div[data-testid="stAppViewContainer"] > .main .stCaption {{
+        color: white !important;
+        text-shadow: 2px 2px 4px #000000 !important;
     }}
 
     .stSidebar > div:first-child {{
         background-color: rgba(255, 255, 255, 0.95);
     }}
-    
     .stSidebar * {{
         color: #0E1117 !important;
         text-shadow: none !important;

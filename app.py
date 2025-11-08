@@ -17,15 +17,14 @@ def add_bg_from_local(image_file):
         background-attachment: fixed;
     }}
 
-    div[data-testid="stAppViewContainer"] > .main h1 {{
+    /* --- Main Title & Caption (White Text) --- */
+    .stApp > .main > div > .stBlock > div > div > h1, 
+    .stApp > .main > div > .stBlock > div > div > .stCaption {{
         color: white !important;
-        text-shadow: 2px 2px 4px #000000 !important;
-    }}
-    div[data-testid="stAppViewContainer"] > .main .stCaption {{
-        color: white !important;
-        text-shadow: 2px 2px 4px #000000 !important;
+        text-shadow: 2px 2px 4px #000000;
     }}
 
+    /* --- Sidebar (Light background, Black text) --- */
     .stSidebar > div:first-child {{
         background-color: rgba(255, 255, 255, 0.95);
     }}
@@ -34,29 +33,29 @@ def add_bg_from_local(image_file):
         text-shadow: none !important;
     }}
 
-    .stApp > div[data-testid="stToolbar"], .stApp > header {{
-        background-color: rgba(255, 255, 255, 0); 
-    }}
-
-    .main > div[data-testid="stBlock"] {{
+    /* --- Main Results Box (Light background, Black text) --- */
+    .main .stBlock .stBlock {{
         background-color: rgba(255, 255, 255, 0.9);
         padding: 20px;
         border-radius: 10px;
     }}
-    .main > div[data-testid="stBlock"] * {{
+    .main .stBlock .stBlock * {{
         color: #0E1117 !important; 
         text-shadow: none !important;
     }}
     
+    /* --- Login Page Title (White text) --- */
     .main > div > h1 {{
         color: white !important;
         text-shadow: 2px 2px 4px #000000 !important;
     }}
     
+    /* --- Predict Button --- */
     .stButton > button {{
         color: #0E1117 !important;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid white;
     }}
-
     </style>
     """,
     unsafe_allow_html=True
@@ -120,71 +119,72 @@ def main_app():
 
     if st.button('Predict Win Probability'):
         
-        if batting_team == bowling_team:
-            st.error('Batting and Bowling teams cannot be the same. Please select different teams.')
-        else:
-            runs_left = target - score
-            balls_left = 120 - (overs * 6)
-            wickets_left = 10 - wickets
-            crr = score / overs if overs > 0 else 0
-            rrr = (runs_left * 6) / balls_left if balls_left > 0 else float('inf')
-
-            st.subheader("Match Summary")
-            summary_data = {
-                "Batting Team": batting_team,
-                "Bowling Team": bowling_team,
-                "Match State": f"Need {runs_left} runs in {int(balls_left)} balls"
-            }
-            st.json(summary_data)
-
-            if runs_left <= 0:
-                st.header(f"Predicted Winner: {batting_team}")
-                st.subheader(f"{batting_team} Win Probability")
-                st.progress(1.0)
-                st.subheader(f"{bowling_team} Win Probability")
-                st.progress(0.0)
-            
-            elif wickets_left <= 0:
-                st.header(f"Predicted Winner: {bowling_team}")
-                st.subheader(f"{batting_team} Win Probability")
-                st.progress(0.0)
-                st.subheader(f"{bowling_team} Win Probability")
-                st.progress(1.0)
-            
-            elif balls_left <= 0:
-                st.header(f"Predicted Winner: {bowling_team}")
-                st.subheader(f"{batting_team} Win Probability")
-                st.progress(0.0)
-                st.subheader(f"{bowling_team} Win Probability")
-                st.progress(1.0)
-                
+        with st.container():
+            if batting_team == bowling_team:
+                st.error('Batting and Bowling teams cannot be the same. Please select different teams.')
             else:
-                input_df = pd.DataFrame({
-                    'BattingTeam': [batting_team],
-                    'BowlingTeam': [bowling_team],
-                    'City': [selected_city],
-                    'runs_left': [runs_left],
-                    'balls_left': [balls_left],
-                    'wickets_left': [wickets_left],
-                    'total_run_x': [target],
-                    'crr': [crr],
-                    'rrr': [rrr]
-                })
-                
-                result = pipe.predict_proba(input_df)
-                loss_prob = result[0][0]
-                win_prob = result[0][1]
+                runs_left = target - score
+                balls_left = 120 - (overs * 6)
+                wickets_left = 10 - wickets
+                crr = score / overs if overs > 0 else 0
+                rrr = (runs_left * 6) / balls_left if balls_left > 0 else float('inf')
 
-                if win_prob > 0.5:
+                st.subheader("Match Summary")
+                summary_data = {
+                    "Batting Team": batting_team,
+                    "Bowling Team": bowling_team,
+                    "Match State": f"Need {runs_left} runs in {int(balls_left)} balls"
+                }
+                st.json(summary_data)
+
+                if runs_left <= 0:
                     st.header(f"Predicted Winner: {batting_team}")
-                else:
-                    st.header(f"Predicted Winner: {bowling_team}")
-
-                st.subheader(f"{batting_team} Win Probability")
-                st.progress(win_prob)
+                    st.subheader(f"{batting_team} Win Probability")
+                    st.progress(1.0)
+                    st.subheader(f"{bowling_team} Win Probability")
+                    st.progress(0.0)
                 
-                st.subheader(f"{bowling_team} Win Probability")
-                st.progress(loss_prob)
+                elif wickets_left <= 0:
+                    st.header(f"Predicted Winner: {bowling_team}")
+                    st.subheader(f"{batting_team} Win Probability")
+                    st.progress(0.0)
+                    st.subheader(f"{bowling_team} Win Probability")
+                    st.progress(1.0)
+                
+                elif balls_left <= 0:
+                    st.header(f"Predicted Winner: {bowling_team}")
+                    st.subheader(f"{batting_team} Win Probability")
+                    st.progress(0.0)
+                    st.subheader(f"{bowling_team} Win Probability")
+                    st.progress(1.0)
+                    
+                else:
+                    input_df = pd.DataFrame({
+                        'BattingTeam': [batting_team],
+                        'BowlingTeam': [bowling_team],
+                        'City': [selected_city],
+                        'runs_left': [runs_left],
+                        'balls_left': [balls_left],
+                        'wickets_left': [wickets_left],
+                        'total_run_x': [target],
+                        'crr': [crr],
+                        'rrr': [rrr]
+                    })
+                    
+                    result = pipe.predict_proba(input_df)
+                    loss_prob = result[0][0]
+                    win_prob = result[0][1]
+
+                    if win_prob > 0.5:
+                        st.header(f"Predicted Winner: {batting_team}")
+                    else:
+                        st.header(f"Predicted Winner: {bowling_team}")
+
+                    st.subheader(f"{batting_team} Win Probability")
+                    st.progress(win_prob)
+                    
+                    st.subheader(f"{bowling_team} Win Probability")
+                    st.progress(loss_prob)
 
 if st.session_state.logged_in:
     try:
